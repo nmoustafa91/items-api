@@ -1,0 +1,470 @@
+openapi: 3.0.0
+info:
+  description: "Items API offers CRUD operations on managing TODO items."
+  version: "0.2.0"
+  title: "Items API"
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /items:
+    get:
+      tags:
+        - "Items"
+      summary: "Get items list"
+      description: "Get items list"
+      operationId: getItems
+      parameters:
+        - $ref: '#/components/parameters/ItemNameQueryParam'
+        - $ref: '#/components/parameters/ItemIdsQueryParam'
+        - $ref: '#/components/parameters/ItemStatusesQueryParam'
+        - $ref: '#/components/parameters/CompletionDateFromQueryParam'
+        - $ref: '#/components/parameters/CompletionDateToQueryParam'
+        - $ref: '#/components/parameters/ItemSearchQueryParam'
+        - $ref: '#/components/parameters/NotDoneQueryParam'
+        - $ref: '#/components/parameters/PageNumberQueryParam'
+        - $ref: '#/components/parameters/PageSizeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        "200":
+          $ref: '#/components/responses/ListItemsResponse'
+    post:
+      tags:
+        - "Items"
+      summary: "Create an item"
+      description: "Create new an item"
+      operationId: createItem
+      requestBody:
+        $ref: "#/components/requestBodies/CreateItemBody"
+      responses:
+        "201":
+          $ref: '#/components/responses/CreateItemResponse'
+        "400":
+          description: "Invalid data supplied"
+
+  /items/{itemId}:
+    parameters:
+      - $ref: "#/components/parameters/ItemIdPathParam"
+    get:
+      tags:
+        - "Items"
+      summary: "Get item"
+      description: "Get existing item"
+      operationId: getItem
+      responses:
+        "200":
+          $ref: '#/components/responses/GetItemResponse'
+        "404":
+          description: "Item not found"
+    put:
+      tags:
+        - "Items"
+      summary: "Update an item"
+      description: "Update existing item"
+      operationId: updateItem
+      parameters:
+        - in: header
+          name: If-Match
+          required: true
+          description: "ETag header value from getItem  call"
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateItemBody"
+      responses:
+        "200":
+          $ref: '#/components/responses/UpdateItemResponse'
+        "400":
+          description: "Invalid data supplied"
+        "404":
+          description: "Item not found"
+    delete:
+      tags:
+        - "Items"
+      summary: "Delete item"
+      description: "Delete existing item"
+      operationId: deleteItem
+      responses:
+        "204":
+          description: "Item successfully deleted"
+        "404":
+          description: "Item not found"
+  /items/{itemId}/description:
+    parameters:
+      - $ref: "#/components/parameters/ItemIdPathParam"
+    patch:
+      tags:
+        - "Items"
+      summary: "Update item description"
+      description: "Update existing item description"
+      operationId: updateItemDescription
+      parameters:
+        - in: header
+          name: If-Match
+          required: true
+          description: "ETag header value from getItem  call"
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateItemDescriptionBody"
+      responses:
+        "200":
+          $ref: '#/components/responses/UpdateItemResponse'
+        "400":
+          description: "Invalid data supplied"
+        "404":
+          description: "Item not found"
+  /items/{itemId}/status:
+    parameters:
+      - $ref: "#/components/parameters/ItemIdPathParam"
+    patch:
+      tags:
+        - "Items"
+      summary: "Update item status"
+      description: "Update existing item status"
+      operationId: updateItemStatus
+      parameters:
+        - in: header
+          name: If-Match
+          required: true
+          description: "ETag header value from getItem  call"
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateItemStatusBody"
+      responses:
+        "200":
+          $ref: '#/components/responses/UpdateItemResponse'
+        "400":
+          description: "Invalid data supplied"
+        "404":
+          description: "Item not found"
+
+components:
+  responses:
+    ListItemsResponse:
+      description: Response with list of items
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ListItemsResponse'
+    CreateItemResponse:
+      description: Response with created item
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Item'
+    UpdateItemResponse:
+      description: Response with updated item
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Item'
+    GetItemResponse:
+      description: Response with existing item
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Item'
+  requestBodies:
+    CreateItemBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateItemRequest'
+    UpdateItemStatusBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateItemStatusRequest'
+    UpdateItemDescriptionBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateItemDescriptionRequest'
+    UpdateItemBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateItemRequest'
+  parameters:
+    ItemIdPathParam:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    ItemIdsQueryParam:
+      description: Items ids query parameter, can be comma-separated list to include multiple values
+      name: itemIds
+      in: query
+      required: false
+      schema:
+        type: array
+        maxItems: 40
+        items:
+          $ref: "#/components/schemas/ItemId"
+
+    ItemStatusesQueryParam:
+      description: Items statuses query parameter, can be comma-separated list to include multiple values
+      name: itemStatuses
+      in: query
+      required: false
+      schema:
+        type: array
+        maxItems: 40
+        items:
+          $ref: "#/components/schemas/ItemStatus"
+
+    ItemNameQueryParam:
+      description: Item name query parameter
+      name: name
+      in: query
+      required: false
+      schema:
+        type: "string"
+
+    NotDoneQueryParam:
+      name: notDone
+      in: query
+      description: Filter by not done status.
+      schema:
+        type: boolean
+      required: false
+
+    ItemSearchQueryParam:
+      name: search
+      in: query
+      description: |
+        Provides full text search on Items.
+
+        Searches in following parameters:
+          * id
+          * name
+      schema:
+        type: string
+      required: false
+
+    CompletionDateFromQueryParam:
+      name: completionDateFrom
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/CompletionDate'
+
+    CompletionDateToQueryParam:
+      name: completionDateTo
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/CompletionDate'
+
+    PageNumberQueryParam:
+      description: Page number, default is 0
+      name: pageNumber
+      in: query
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      required: false
+
+    PageSizeQueryParam:
+      description: Number of items in a page, default page size is 20, maximum 50
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+        default: 20
+      required: false
+
+    SortQueryParam:
+      description: |
+        Sort criteria, format: '?sort=&lt;propertyA&gt;[,&lt;propertyB&gt;][,(asc|desc)]',
+        sort parameter can be used several times in one query
+      name: sort
+      in: query
+      schema:
+        type: string
+      required: false
+
+  schemas:
+    ListItemsResponse:
+      description: List of items with paging support
+      properties:
+        results:
+          $ref: '#/components/schemas/ItemsResults'
+        paging:
+          $ref: '#/components/schemas/Paging'
+      required:
+        - results
+        - paging
+
+    ItemsResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/Item'
+
+    CreateItemRequest:
+      description: Request to create item
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+
+    UpdateItemStatusRequest:
+      description: Request to update item status
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+
+    UpdateItemDescriptionRequest:
+      description: Request to update item description
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: "string"
+
+    UpdateItemRequest:
+      description: Request to update item (different fields)
+      type: object
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+    
+    Item:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/ItemId'
+            name:
+              type: "string"
+            description:
+              type: "string"
+            completionDate:
+              type: "string"
+              format: "date-time"
+            status:
+              $ref: '#/components/schemas/ItemStatus'
+          title: Item
+        - $ref: '#/components/schemas/Audit'
+
+    ItemId:
+      type: "string"
+      format: "uuid"
+
+    CompletionDate:
+      type: "string"
+      format: "date"
+
+    ItemStatus:
+      type: "string"
+      enum:
+        - NOTDONE
+        - DONE
+
+    Paging:
+      type: "object"
+      description: "Paging information"
+      required:
+        - "pageNumber"
+        - "pageSize"
+        - "pageCount"
+        - "totalElements"
+      properties:
+        pageNumber:
+          type: "integer"
+          format: "int32"
+          description: "Page number, first page is 0"
+        pageSize:
+          type: "integer"
+          format: "int32"
+          description: "Number of items in the page"
+        pageCount:
+          type: "integer"
+          format: "int32"
+          description: "Total number of pages"
+        totalElements:
+          type: "integer"
+          format: "int64"
+          description: "Total number of elements"
+      example:
+        pageNumber: 0
+        pageSize: 20
+        pageCount: 5
+
+    Audit:
+      type: object
+      properties:
+        created:
+          description: Date of creation
+          type: string
+          format: date-time
+        lastModified:
+          description: Date of last modification
+          type: string
+          format: date-time
+        createdBy:
+          type: "string"
+          description: "Created by"
+        lastModifiedBy:
+          type: "string"
+          description: "Last modified by"
+
+    ### ERROR RESPONSE ###
+    ApiErrorResponse:
+      description: Representation of an error which occurred on the server
+      type: object
+      properties:
+        traceId:
+          description: Trace identifier to easily find error on the server
+          type: "string"
+        timestamp:
+          description: Incident date time
+          type: string
+          format: 'date-time'
+          example: '2023-06-01T09:00:43Z'
+        status:
+          description: HTTP response code
+          type: "integer"
+          example: 404
+        message:
+          description: Basic description of problem
+          type: "string"
+          example: Some fields are not valid
+        details:
+          type: array
+          items:
+            description: Detail information about error
+            type: string
+        path:
+          type: "string"
+          description: "Request path"
+          example: "/request"
+        error:
+          type: "string"
+          example: FORBIDDEN
+        code:
+          type: "string"
+          description: |
+            * `ITEMS_ERR_1401_ITEM_NOT_FOUND` - Item not found.
+tags:
+  - name: "Items"
+    description: ""
