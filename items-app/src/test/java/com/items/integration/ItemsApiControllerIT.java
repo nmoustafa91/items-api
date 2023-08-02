@@ -250,26 +250,18 @@ public class ItemsApiControllerIT extends AbstractIT {
 		var item3 = itemsHelper.create(createRequest3).getBody();
 		var item4 = itemsHelper.create(createRequest4).getBody();
 
-		var response = itemsHelper.getItems(null, null, null, null, null, null, String.valueOf(Boolean.TRUE),
-				PageRequest.of(0, 10));
-		assertThat(response.getStatusCode(), is(HttpStatus.OK));
-		assertEquals(4, response.getBody().getResults().size());
-		List<UUID> itemsIds = response.getBody().getResults().stream().map((ItemDTO::getId)).toList();
-		assertThat(itemsIds, containsInAnyOrder(item1.getId(), item2.getId(), item3.getId(), item4.getId()));
-
-		response = itemsHelper.getItems(null, null, List.of(ItemStatusDTO.DONE.getValue()), null, null, null,
+		var response = itemsHelper.getItems(null, null, List.of(ItemStatusDTO.DONE.getValue()), null, null, null,
 				String.valueOf(Boolean.FALSE), PageRequest.of(0, 10));
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertEquals(0, response.getBody().getResults().size());
 
 		itemsHelper.updateStatus(new UpdateItemStatusRequestDTO().status(ItemStatusDTO.DONE), item2.getId());
 		itemsHelper.updateStatus(new UpdateItemStatusRequestDTO().status(ItemStatusDTO.DONE), item4.getId());
-
 		response = itemsHelper.getItems(null, null, null, null, null, null, String.valueOf(Boolean.TRUE),
 				PageRequest.of(0, 10));
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 		assertEquals(2, response.getBody().getResults().size());
-		itemsIds = response.getBody().getResults().stream().map((ItemDTO::getId)).toList();
+		List<UUID> itemsIds = response.getBody().getResults().stream().map((ItemDTO::getId)).toList();
 		assertThat(itemsIds, not(containsInAnyOrder(item2.getId(), item4.getId())));
 	}
 

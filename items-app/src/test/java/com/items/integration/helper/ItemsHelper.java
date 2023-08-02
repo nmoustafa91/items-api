@@ -40,11 +40,6 @@ public class ItemsHelper extends AbstractRestCallHelper {
     return testRestTemplate.postForEntity(ITEMS_URL, request, ItemDTO.class);
   }
 
-  public void create(CreateItemRequestDTO request, HttpStatus expectedStatus) {
-    var response = testRestTemplate.postForEntity(ITEMS_URL, request, ApiErrorResponseDTO.class);
-    assertThat(response.getStatusCode(), is(expectedStatus));
-  }
-
   public ResponseEntity<ItemDTO> getItem(UUID itemId) {
     return testRestTemplate.getForEntity(ITEM_URL, ItemDTO.class, itemId);
   }

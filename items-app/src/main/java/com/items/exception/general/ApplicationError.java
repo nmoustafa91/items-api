@@ -2,7 +2,6 @@ package com.items.exception.general;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -49,24 +48,6 @@ public class ApplicationError implements Serializable {
   public ApplicationError() {
   }
 
-  public ApplicationError(HttpStatusCode status) {
-    setHttpStatus(status);
-  }
-
-  public ApplicationError(HttpStatusCode status, String path, ErrorCode errorDataProvider, Object... parameters) {
-    setHttpStatus(status);
-    setPath(path);
-    setParameters(parameters);
-    setCodeAndMessage(errorDataProvider);
-  }
-
-  public ApplicationError setParameters(Object... parameters) {
-    if (parameters != null) {
-      this.parameters = Arrays.asList(parameters);
-    }
-    return this;
-  }
-
   public String getMessage() {
     if (!CollectionUtils.isEmpty(getParameters())) {
       return ParameterizedMessage.format(getRawMessage(),
@@ -82,11 +63,10 @@ public class ApplicationError implements Serializable {
     return this;
   }
 
-  public ApplicationError setHttpStatus(HttpStatusCode status) {
+  public void setHttpStatus(HttpStatusCode status) {
     this.status = status.value();
     HttpStatus httpStatus = HttpStatus.resolve(status.value());
     this.error = httpStatus != null ? httpStatus.getReasonPhrase() : null;
-    return this;
   }
 
 }

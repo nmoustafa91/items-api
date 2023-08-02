@@ -56,7 +56,6 @@ public class ItemsController implements ItemsApi {
 	 * @param itemStatuses       Items statuses query parameter, can be
 	 *                           comma-separated list to include multiple values
 	 *                           (optional)
-	 * @param price              Item name query parameter (optional)
 	 * @param completionDateFrom (optional)
 	 * @param completionDateTo   (optional)
 	 * @param search             Provides full text search on Items. Searches in
@@ -77,6 +76,13 @@ public class ItemsController implements ItemsApi {
 			Boolean notDone, Integer pageNumber, Integer pageSize, String sort) {
 		ListItemsResponseDTO listItemsResponseDTO = itemService.getItems(name, itemIds, itemStatuses,
 				completionDateFrom, completionDateTo, search, notDone,
+				PageRequest.of(pageNumber, pageSize, Sort.by(sort == null ? "created" : sort)));
+		return ResponseEntity.ok(listItemsResponseDTO);
+	}
+
+	@Override
+	public ResponseEntity<ListItemsResponseDTO> getAllItems(Boolean notDone, Integer pageNumber, Integer pageSize, String sort) {
+		ListItemsResponseDTO listItemsResponseDTO = itemService.getAllItems(notDone,
 				PageRequest.of(pageNumber, pageSize, Sort.by(sort == null ? "created" : sort)));
 		return ResponseEntity.ok(listItemsResponseDTO);
 	}

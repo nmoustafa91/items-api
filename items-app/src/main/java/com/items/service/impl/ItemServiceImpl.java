@@ -6,9 +6,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +41,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-	@Autowired
-	private ItemRepository itemRepository;
-	@Autowired
-	private ItemMapper itemMapper;
+	private final ItemRepository itemRepository;
+	private final ItemMapper itemMapper;
 
 	private final ItemsApiProperties itemsApiProperties;
 	private final Clock clock;
@@ -129,6 +127,13 @@ public class ItemServiceImpl implements ItemService {
 	public void deleteItem(UUID itemId) {
 		ItemEntity item = getItemById(itemId);
 		itemRepository.delete(item);
+	}
+
+	@Override
+	public ListItemsResponseDTO getAllItems(Boolean notDone, PageRequest pageRequest) {
+		Page<ItemEntity> page = (Boolean.TRUE.equals(notDone)) ?
+				itemRepository.findAllByStatus(ItemStatusEnum.NOTDONE, pageRequest) : itemRepository.findAll(pageRequest);
+		return itemMapper.pageToItemsResponseDTO(page);
 	}
 
 	private ItemEntity getItemById(UUID itemId) {

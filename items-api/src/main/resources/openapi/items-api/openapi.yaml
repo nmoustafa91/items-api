@@ -43,6 +43,23 @@ paths:
         "400":
           description: "Invalid data supplied"
 
+  /items/all-items:
+    get:
+      tags:
+        - "Items"
+      summary: "Get all items"
+      description: "Get all items"
+      operationId: getAllItems
+      parameters:
+        - $ref: '#/components/parameters/NotDoneQueryParam'
+        - $ref: '#/components/parameters/PageNumberQueryParam'
+        - $ref: '#/components/parameters/PageSizeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        "200":
+          $ref: '#/components/responses/ListItemsResponse'
+
+
   /items/{itemId}:
     parameters:
       - $ref: "#/components/parameters/ItemIdPathParam"

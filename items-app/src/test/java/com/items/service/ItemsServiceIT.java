@@ -242,6 +242,6 @@ public class ItemsServiceIT extends AbstractIT {
 	}
 
 	private String getEtag(VersionModel<ItemDTO> retrievedVersionModel) {
-		return "\"" + String.valueOf(retrievedVersionModel.getVersion()) + "\"";
+		return "\"" + retrievedVersionModel.getVersion() + "\"";
 	}
 }

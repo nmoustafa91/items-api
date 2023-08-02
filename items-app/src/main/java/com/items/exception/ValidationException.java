@@ -7,5 +7,4 @@ public class ValidationException extends ApplicationErrorException {
 
   public ValidationException(final ApplicationError error) { super(error); }
 
-  public ValidationException(final ApplicationError error, Throwable cause) { super(error, cause); }
 }

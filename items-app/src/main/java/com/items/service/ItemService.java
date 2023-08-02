@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.items.db.model.VersionModel;
@@ -32,4 +33,5 @@ public interface ItemService {
 
   void deleteItem(UUID itemId);
 
+  ListItemsResponseDTO getAllItems(Boolean notDone, PageRequest of);
 }

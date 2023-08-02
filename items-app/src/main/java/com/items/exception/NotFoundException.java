@@ -7,6 +7,4 @@ public class NotFoundException extends ApplicationErrorException {
 
   public NotFoundException(final ApplicationError error) { super(error); }
 
-  public NotFoundException(final ApplicationError error, Throwable cause) { super(error, cause); }
-
 }

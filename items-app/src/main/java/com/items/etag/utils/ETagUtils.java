@@ -30,24 +30,8 @@ public class ETagUtils {
     }
   }
 
-  public static String parseETagValue(@NonNull String eTag) {
-
-    final Matcher matcher = ETAG_PATTERN.matcher(eTag);
-    if (matcher.matches()) {
-      return matcher.group(2);
-    }
-    return "";
-  }
-
   public static String formatVersionToETag(Long version) {
     return "\"" + version + "\"";
   }
 
-  public static String formatStringToETag(String string) {
-    return "\"" + string + "\"";
-  }
-
-  public static String formatToETag(Object object) {
-    return "\"" + object + "\"";
-  }
 }

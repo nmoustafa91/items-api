@@ -7,7 +7,4 @@ public class ItemNotFoundException extends NotFoundException {
     super(error);
   }
 
-  public ItemNotFoundException(ApplicationError error, Throwable cause) {
-    super(error, cause);
-  }
 }
